@@ -32,7 +32,7 @@ class Vendor():
             # Run vendor-specific scraping function.
             stock = func(self, url)
 
-            self.scraper.close()
+            self.scraper.quit()
 
             return stock
 
