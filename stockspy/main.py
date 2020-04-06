@@ -60,8 +60,7 @@ class StockSpy():
                 # Alert if any product in stock_dict is >0
                 for product in stock_dict['stock']:
                     if list(product.values())[0] > 0:
-                        log.info(f'STOCK AVAILABLE: {list(product.keys())[0]}')
-                        self.alarm.play()
+                        self.alert(product)
 
                 log.info(f'Checking again in {interval} minute(s)...')
                 time.sleep(interval * 60)
@@ -69,6 +68,12 @@ class StockSpy():
         except KeyboardInterrupt:
             log.info('Exiting...')
             sys.exit(0)
+
+    def alert(self, product):
+        log = self.logger
+
+        log.info(f'STOCK AVAILABLE: {list(product.keys())[0]}')
+        self.alarm.play()
 
 
 if __name__ == '__main__':
