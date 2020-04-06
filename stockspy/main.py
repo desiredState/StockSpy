@@ -28,6 +28,7 @@ class StockSpy():
         # environment variable to prevent it spamming STDOUT.
         os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
         import pygame
+
         pygame.init()
         self.alarm = pygame.mixer.Sound('assets/alarm.wav')
 
