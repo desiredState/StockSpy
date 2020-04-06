@@ -1,0 +1,21 @@
+{
+  // Editor.
+  "terminal.integrated.fontSize": 14,
+  "workbench.panel.defaultLocation": "right",
+  "editor.fontSize": 14,
+
+  // Python.
+  "python.jediEnabled": false,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Args": ["--ignore=E501"],
+  "python.linting.enabled": true,
+  "[python]": {
+    "editor.rulers": [79, 120]
+  },
+  "python.pythonPath": "/Users/dmi29/.local/share/virtualenvs/stockspy-n7SzIvOM/bin/python",
+
+  // Prettier.
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}
