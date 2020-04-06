@@ -22,7 +22,7 @@ class Vendor():
             options = ChromeOptions()
             options.add_argument('--headless')
             options.add_argument(f'user-agent={headers}')
-            # options.add_argument("user-data-dir=/Users/dmi29/Library/Application Support/Google/Chrome/")
+            # options.add_argument("user-data-dir=/Users/{username}/Library/Application Support/Google/Chrome/")
 
             self.scraper = webdriver.Chrome(options=options)
 
