@@ -4,8 +4,7 @@ import logging
 import sys
 import time
 import argparse
-
-from playsound import playsound
+import os
 
 from vendors.vendors import Vendors
 from products.products import Products
@@ -25,6 +24,13 @@ class StockSpy():
             print(f'Failed to initialise logging with exception:\n{e}')
             sys.exit(1)
 
+        # Audio support (for alarms). pygame must be imported after setting the
+        # environment variable to prevent it spamming STDOUT.
+        os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+        import pygame
+        pygame.init()
+        self.alarm = pygame.mixer.Sound('assets/alarm.wav')
+
     def run(self, debug, interval):
         log = self.logger
 
@@ -37,14 +43,14 @@ class StockSpy():
 
         # Main loop.
         try:
-            log.info('Starting...')
-
             while True:
                 products_dict = products.load()
                 stock_dict = {'stock': []}
 
                 # For each product, scrape current stock and add to stock_dict.
                 for url in products_dict['products']:
+                    log.info('Checking: {}'.format(vendors.get_vendor(url)))
+
                     stock = vendors.get_stock(url)
                     stock_dict['stock'].append({url: stock})
 
@@ -54,13 +60,13 @@ class StockSpy():
                 for product in stock_dict['stock']:
                     if list(product.values())[0] > 0:
                         log.info(f'STOCK AVAILABLE: {list(product.keys())[0]}')
-                        playsound('static/alarm.wav', block=False)
+                        self.alarm.play()
 
                 log.info(f'Checking again in {interval} minute(s)...')
                 time.sleep(interval * 60)
 
         except KeyboardInterrupt:
-            log.info('Stopping...')
+            log.info('Exiting...')
             sys.exit(0)
 
 
