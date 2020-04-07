@@ -112,7 +112,7 @@ if __name__ == '__main__':
         '--silent',
         required=False,
         action='store_true',
-        help='don\'t play an alarm sound',
+        help='don\'t play an alarm sound (default: False)',
         default=False
     )
 
