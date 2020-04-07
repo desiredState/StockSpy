@@ -43,8 +43,8 @@ class StockSpy():
         products = Products()
 
         # Main loop.
-        try:
-            while True:
+        while True:
+            try:
                 products_dict = products.load()
                 stock_dict = {'stock': []}
 
@@ -65,9 +65,13 @@ class StockSpy():
                 log.info(f'Checking again in {interval} minute(s)...')
                 time.sleep(interval * 60)
 
-        except KeyboardInterrupt:
-            log.info('Exiting...')
-            sys.exit(0)
+            except KeyboardInterrupt:
+                log.info('Exiting...')
+                sys.exit(0)
+
+            except Exception as e:
+                log.error(f'An error occured:\n{e}')
+                continue
 
     def alert(self, product):
         log = self.logger
