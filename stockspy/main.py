@@ -14,7 +14,8 @@ class StockSpy():
     def __init__(self):
         try:
             logging.basicConfig(
-                format='StockSpy (%(levelname)s) > %(message)s',
+                format='[%(asctime)s] StockSpy (%(levelname)s) > %(message)s',
+                datefmt='%H:%M:%S',
                 level=logging.INFO
             )
 
