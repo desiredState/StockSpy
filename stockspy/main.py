@@ -6,6 +6,7 @@ import time
 import argparse
 import os
 import smtplib
+from email.message import EmailMessage
 
 from vendors.vendors import Vendors
 from products.products import Products
@@ -26,7 +27,7 @@ class StockSpy():
             print(f'Failed to initialise logging with exception:\n{e}')
             sys.exit(1)
 
-    def run(self, debug, interval, silent):
+    def run(self, debug, interval, silent, smtp_username, smtp_password, smtp_server):
         log = self.logger
 
         if debug:
@@ -63,7 +64,7 @@ class StockSpy():
                 # Alert if any product in stock_dict is >0
                 for product in stock_dict['stock']:
                     if list(product.values())[0] > 0:
-                        self.alert(product, silent)
+                        self.alert(product, silent, smtp_username, smtp_password, smtp_server)
 
                 log.info(f'Checking again in {interval} minute(s)...')
                 time.sleep(interval * 60)
@@ -76,29 +77,35 @@ class StockSpy():
                 log.error(f'An error occured:\n{e}')
                 continue
 
-    def alert(self, product, silent):
+    def alert(self, product, silent, smtp_username, smtp_password, smtp_server):
         log = self.logger
         log.info(f'STOCK AVAILABLE: {list(product.keys())[0]}')
 
-        self.send_email(f'STOCK AVAILABLE: {list(product.keys())[0]}')
+        log.info('Sending email alert...')
+        self.send_email(
+            f'STOCK AVAILABLE: {list(product.keys())[0]}',
+            smtp_username,
+            smtp_password,
+            smtp_server
+        )
 
         if not silent:
             self.alarm.play()
 
-    def send_email(self, content):
-        from email.message import EmailMessage
-
+    def send_email(self, content, smtp_username, smtp_password, smtp_server):
         msg = EmailMessage()
         msg.set_content(content)
 
         msg['Subject'] = f'StockSpy - STOCK AVAILABLE'
-        msg['From'] = 'me'
-        msg['To'] = 'you'
+        msg['From'] = smtp_username
+        msg['To'] = smtp_username
 
-# Send the message via our own SMTP server.
-s = smtplib.SMTP('localhost')
-s.send_message(msg)
-s.quit()
+        s = smtplib.SMTP(smtp_server)
+        s.ehlo()
+        s.starttls()
+        s.login(smtp_username, smtp_password)
+        s.send_message(msg)
+        s.quit()
 
 
 if __name__ == '__main__':
@@ -126,12 +133,40 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-s',
+        '-x',
         '--silent',
         required=False,
         action='store_true',
         help='don\'t play an alarm sound (default: False)',
         default=False
+    )
+
+    parser.add_argument(
+        "-u",
+        "--smtp-username",
+        required=True,
+        type=str,
+        metavar='USERNAME',
+        help="SMTP username"
+    )
+
+    parser.add_argument(
+        "-p",
+        "--smtp-password",
+        required=True,
+        type=str,
+        metavar='PASSWORD',
+        help="SMTP password"
+    )
+
+    parser.add_argument(
+        "-s",
+        "--smtp-server",
+        required=False,
+        type=str,
+        metavar='URL',
+        help="SMTP server (default: smtp.gmail.com:587)",
+        default='smtp.gmail.com:587'
     )
 
     args = parser.parse_args()
@@ -140,5 +175,8 @@ if __name__ == '__main__':
     spy.run(
         debug=args.debug,
         interval=args.interval,
-        silent=args.silent
+        silent=args.silent,
+        smtp_username=args.smtp_username,
+        smtp_password=args.smtp_password,
+        smtp_server=args.smtp_server
     )
