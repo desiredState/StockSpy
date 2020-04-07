@@ -5,6 +5,7 @@ import sys
 import time
 import argparse
 import os
+import smtplib
 
 from vendors.vendors import Vendors
 from products.products import Products
@@ -77,11 +78,27 @@ class StockSpy():
 
     def alert(self, product, silent):
         log = self.logger
-
         log.info(f'STOCK AVAILABLE: {list(product.keys())[0]}')
+
+        self.send_email(f'STOCK AVAILABLE: {list(product.keys())[0]}')
 
         if not silent:
             self.alarm.play()
+
+    def send_email(self, content):
+        from email.message import EmailMessage
+
+        msg = EmailMessage()
+        msg.set_content(content)
+
+        msg['Subject'] = f'StockSpy - STOCK AVAILABLE'
+        msg['From'] = 'me'
+        msg['To'] = 'you'
+
+# Send the message via our own SMTP server.
+s = smtplib.SMTP('localhost')
+s.send_message(msg)
+s.quit()
 
 
 if __name__ == '__main__':
