@@ -1,10 +1,10 @@
 from .common import Vendor
 
 
-class AmazonUK(Vendor):
+class JohnLewis(Vendor):
     @Vendor.scraper
     def get_stock(self, url):
-        if 'Buy new' in self.scraper.page_source:
+        if 'Currently unavailablee' not in self.scraper.page_source:
             return 1
         else:
             return 0
