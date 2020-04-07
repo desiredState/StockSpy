@@ -8,8 +8,4 @@ flake8 = "*"
 
 [packages]
 selenium = "*"
-pyobjc = "*"
 pygame = "*"
-
-[requires]
-python_version = "3.7"
