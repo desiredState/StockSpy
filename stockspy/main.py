@@ -24,20 +24,21 @@ class StockSpy():
             print(f'Failed to initialise logging with exception:\n{e}')
             sys.exit(1)
 
-        # Audio support (for alarms). pygame must be imported after setting the
-        # environment variable to prevent it spamming STDOUT.
-        os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-        import pygame
-
-        pygame.init()
-        self.alarm = pygame.mixer.Sound('assets/alarm.wav')
-
-    def run(self, debug, interval):
+    def run(self, debug, interval, silent):
         log = self.logger
 
         if debug:
             log.setLevel(logging.DEBUG)
             log.debug('Debug on.')
+
+        if not silent:
+            # Audio support (for alarms). pygame must be imported after setting the
+            # environment variable to prevent it spamming STDOUT.
+            os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+            import pygame
+
+            pygame.init()
+            self.alarm = pygame.mixer.Sound('assets/alarm.wav')
 
         vendors = Vendors()
         products = Products()
@@ -60,7 +61,7 @@ class StockSpy():
                 # Alert if any product in stock_dict is >0
                 for product in stock_dict['stock']:
                     if list(product.values())[0] > 0:
-                        self.alert(product)
+                        self.alert(product, silent)
 
                 log.info(f'Checking again in {interval} minute(s)...')
                 time.sleep(interval * 60)
@@ -73,11 +74,13 @@ class StockSpy():
                 log.error(f'An error occured:\n{e}')
                 continue
 
-    def alert(self, product):
+    def alert(self, product, silent):
         log = self.logger
 
         log.info(f'STOCK AVAILABLE: {list(product.keys())[0]}')
-        self.alarm.play()
+
+        if not silent:
+            self.alarm.play()
 
 
 if __name__ == '__main__':
@@ -104,10 +107,20 @@ if __name__ == '__main__':
         default=30
     )
 
+    parser.add_argument(
+        '-s',
+        '--silent',
+        required=False,
+        action='store_true',
+        help='don\'t play an alarm sound',
+        default=False
+    )
+
     args = parser.parse_args()
 
     spy = StockSpy()
     spy.run(
         debug=args.debug,
-        interval=args.interval
+        interval=args.interval,
+        silent=args.silent
     )
