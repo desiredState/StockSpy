@@ -14,4 +14,4 @@ if [[ "$UPDATE" = true ]] ; then
     docker pull "${NAMESPACE}/${IMAGE}:${TAG}"
 fi
 
-docker run -ti --rm "${NAMESPACE}/${IMAGE}:${TAG}" "${@}"
+docker run -d "${NAMESPACE}/${IMAGE}:${TAG}" "${@}"
