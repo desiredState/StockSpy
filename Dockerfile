@@ -1,6 +1,7 @@
 FROM selenium/standalone-chrome
 
 ENV APT_PACKAGES \
+    tzdata \
     python3-pip \
     python-pygame
 
@@ -13,6 +14,9 @@ USER root
 RUN apt-get update && \
     apt-get -y install $APT_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
+
+RUN cp /usr/share/zoneinfo/Europe/London /etc/localtime && \
+    echo "Europe/London" > /etc/timezone
 
 RUN pip3 --no-cache-dir install pipenv
 
