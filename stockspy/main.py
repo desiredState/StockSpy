@@ -54,7 +54,7 @@ class StockSpy():
 
                 # For each product, scrape current stock and add to stock_dict.
                 for url in products_dict['products']:
-                    log.info('Checking: {}'.format(vendors.get_vendor(url)))
+                    log.info('Scraping: {}'.format(vendors.get_vendor(url)))
 
                     stock = vendors.get_stock(url)
                     stock_dict['stock'].append({url: stock})
