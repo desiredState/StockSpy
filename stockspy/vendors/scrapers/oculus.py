@@ -21,8 +21,6 @@ class Oculus(Vendor):
         element = self.scraper.find_element_by_xpath('//*[@id="pre-orderfeatures"]/div/div/div[2]/div[2]/div/span/span[1]')
 
         if element.text == 'Not Available':
-            print('NOT AVAILABLE')
             return 0
         else:
-            print('AVAILABLE')
             return 1
