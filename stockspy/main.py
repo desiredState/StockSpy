@@ -67,7 +67,7 @@ class StockSpy():
                     if list(product.values())[0] > 0:
                         self.alert(product, silent, smtp_username, smtp_password, smtp_server)
 
-                interval = random.randint(1, interval_max + 1)
+                interval = random.randint(1, interval_max)
 
                 log.info(f'Checking again in {interval} minute(s)...')
                 interval = time.sleep(interval * 60)
