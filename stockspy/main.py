@@ -57,22 +57,21 @@ class StockSpy():
                 # For each product, scrape current stock and add to stock_dict.
                 for url in products_dict['products']:
                     vendor = urlparse(url)
-                    log.info('Scraping: {}'.format(vendor.hostname))
+                    log.info('Checking: {}'.format(vendor.hostname))
 
                     stock = vendors.get_stock(url)
+
+                    if stock > 0:
+                        self.alert(url, silent, smtp_username, smtp_password, smtp_server)
+
                     stock_dict['stock'].append({url: stock})
 
                 log.debug(stock_dict)
 
-                # Alert if any product in stock_dict is >0
-                for product in stock_dict['stock']:
-                    if list(product.values())[0] > 0:
-                        self.alert(product, silent, smtp_username, smtp_password, smtp_server)
-
                 interval = random.randint(1, interval_max)
 
                 log.info(f'Checking again in {interval} minute(s)...')
-                interval = time.sleep(interval * 60)
+                time.sleep(interval * 60)
 
             except KeyboardInterrupt:
                 log.info('Exiting...')
@@ -80,15 +79,17 @@ class StockSpy():
 
             except Exception as e:
                 log.error(f'An error occured:\n{e}')
+                log.info(f'Trying again in 5 minutes...')
+                time.sleep(5 * 60)
                 continue
 
-    def alert(self, product, silent, smtp_username, smtp_password, smtp_server):
+    def alert(self, url, silent, smtp_username, smtp_password, smtp_server):
         log = self.logger
-        log.info(f'STOCK AVAILABLE: {list(product.keys())[0]}')
+        log.info(f'STOCK AVAILABLE: {url}')
 
         log.info('Sending email alert...')
         self.send_email(
-            f'STOCK AVAILABLE: {list(product.keys())[0]}',
+            f'STOCK AVAILABLE: {url}',
             smtp_username,
             smtp_password,
             smtp_server
