@@ -4,7 +4,11 @@ from .common import Vendor
 class AmazonUK(Vendor):
     @Vendor.scraper
     def get_stock(self, url):
-        if 'Currently unavailable.' not in self.scraper.page_source:
-            return 1
-        else:
+        element = self.scraper.find_element_by_xpath('//*[@id="availability"]/span')
+
+        if element.text == 'Currently unavailable.':
+            print('not in stock')
             return 0
+        else:
+            print('in stock')
+            return 1
