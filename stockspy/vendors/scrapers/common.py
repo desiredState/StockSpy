@@ -22,6 +22,7 @@ class Vendor():
             options = ChromeOptions()
             # options.add_argument('--headless')
             options.add_argument(f'user-agent={headers}')
+            options.add_argument('--remote-debugging-port=9222')
             # options.add_argument("user-data-dir=/Users/{username}/Library/Application Support/Google/Chrome/")
 
             self.scraper = webdriver.Chrome(options=options)
@@ -30,11 +31,9 @@ class Vendor():
             # Request page content.
             self.scraper.get(url)
 
-            # Prevent scraper identification.
+            # Prevent some scraper identification techniques.
+            # https://intoli.com/blog/making-chrome-headless-undetectable/
             self.scraper.execute_script("""
-navigator.languages = ['en-US', 'en'];
-navigator.plugins = [1, 2, 3, 4, 5];
-
 Object.defineProperty(navigator, 'languages', {
   get: function() {
     return ['en-US', 'en'];
@@ -43,12 +42,12 @@ Object.defineProperty(navigator, 'languages', {
 
 Object.defineProperty(navigator, 'plugins', {
   get: function() {
-    // this just needs to have `length > 0`, but we could mock the plugins too
-    return [1, 2, 3, 4, 5];
+    return [1, 2, 3, 4];
   },
 });
 
 const getParameter = WebGLRenderingContext.getParameter;
+
 WebGLRenderingContext.prototype.getParameter = function(parameter) {
   if (parameter === 37445) {
     return 'Intel Open Source Technology Center';
