@@ -8,6 +8,7 @@ import os
 import random
 import smtplib
 from email.message import EmailMessage
+from urllib.parse import urlparse
 
 from vendors.vendors import Vendors
 from products.products import Products
@@ -55,7 +56,8 @@ class StockSpy():
 
                 # For each product, scrape current stock and add to stock_dict.
                 for url in products_dict['products']:
-                    log.info('Scraping: {}'.format(vendors.get_vendor(url)))
+                    vendor = urlparse(url)
+                    log.info('Scraping: {}'.format(vendor.hostname)
 
                     stock = vendors.get_stock(url)
                     stock_dict['stock'].append({url: stock})
