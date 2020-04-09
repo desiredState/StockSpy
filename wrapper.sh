@@ -14,4 +14,4 @@ if [[ "$UPDATE" = true ]] ; then
     docker pull "${NAMESPACE}/${IMAGE}:${TAG}"
 fi
 
-docker run -d --restart always "${NAMESPACE}/${IMAGE}:${TAG}" "${@}"
+docker run --name stockspy -d --restart always "${NAMESPACE}/${IMAGE}:${TAG}" "${@}"
