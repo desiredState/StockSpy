@@ -5,6 +5,7 @@ import sys
 import time
 import argparse
 import os
+import random
 import smtplib
 from email.message import EmailMessage
 
@@ -27,7 +28,7 @@ class StockSpy():
             print(f'Failed to initialise logging with exception:\n{e}')
             sys.exit(1)
 
-    def run(self, debug, interval, silent, smtp_username, smtp_password, smtp_server):
+    def run(self, debug, interval_max, silent, smtp_username, smtp_password, smtp_server):
         log = self.logger
 
         if debug:
@@ -66,8 +67,10 @@ class StockSpy():
                     if list(product.values())[0] > 0:
                         self.alert(product, silent, smtp_username, smtp_password, smtp_server)
 
+                interval = random.randint(1, interval_max + 1)
+
                 log.info(f'Checking again in {interval} minute(s)...')
-                time.sleep(interval * 60)
+                interval = time.sleep(interval * 60)
 
             except KeyboardInterrupt:
                 log.info('Exiting...')
@@ -124,11 +127,11 @@ if __name__ == '__main__':
 
     parser.add_argument(
         "-i",
-        "--interval",
+        "--interval-max",
         required=False,
         type=int,
         metavar='MINUTES',
-        help="how often to run in minutes (default: 30)",
+        help="the maximum time to wait between runs in minutes (default: 30)",
         default=30
     )
 
@@ -174,7 +177,7 @@ if __name__ == '__main__':
     spy = StockSpy()
     spy.run(
         debug=args.debug,
-        interval=args.interval,
+        interval_max=args.interval_max,
         silent=args.silent,
         smtp_username=args.smtp_username,
         smtp_password=args.smtp_password,
