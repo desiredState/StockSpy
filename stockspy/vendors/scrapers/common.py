@@ -20,9 +20,9 @@ class Vendor():
                        '/77.0.3865.90 Safari/537.36'}
 
             options = ChromeOptions()
-            # options.add_argument('--headless')
+            options.add_argument('--headless')
             options.add_argument(f'user-agent={headers}')
-            options.add_argument('--remote-debugging-port=9222')
+            # options.add_argument('--remote-debugging-port=9222')
             # options.add_argument("user-data-dir=/Users/{username}/Library/Application Support/Google/Chrome/")
 
             self.scraper = webdriver.Chrome(options=options)
