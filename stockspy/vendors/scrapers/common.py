@@ -25,7 +25,7 @@ class Vendor():
             # options.add_argument("user-data-dir=/Users/{username}/Library/Application Support/Google/Chrome/")
 
             self.scraper = webdriver.Chrome(options=options)
-            self.scraper.set_window_size(1920, 1080)
+            # self.scraper.set_window_size(1920, 1080)
 
             # Retrieve page content.
             self.scraper.get(url)
