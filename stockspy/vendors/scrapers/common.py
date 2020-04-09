@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.common.exceptions import NoSuchElementException
 
 
 class Vendor():
@@ -60,7 +61,11 @@ WebGLRenderingContext.prototype.getParameter = function(parameter) {
 
             # Run the vendor-specific scraping function which is wrapped by
             # this decorator.
-            stock = func(self, url)
+            try:
+                stock = func(self, url)
+
+            except NoSuchElementException:
+                stock = 1  # TODO: Handle errors better.
 
             self.scraper.quit()
 
