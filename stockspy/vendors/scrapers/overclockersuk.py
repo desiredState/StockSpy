@@ -4,7 +4,9 @@ from .common import Vendor
 class OverclockersUK(Vendor):
     @Vendor.scraper
     def get_stock(self, url):
-        if 'Out of stock' not in self.scraper.page_source:
-            return 1
-        else:
+        element = self.scraper.find_element_by_xpath('//*[@id="buybox"]/span/p')
+
+        if element.text == 'Out of stock':
             return 0
+        else:
+            return 1
