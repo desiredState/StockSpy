@@ -5,7 +5,6 @@ import sys
 import time
 import datetime
 import argparse
-import os
 import pprint
 import random
 import smtplib
@@ -114,19 +113,20 @@ class StockSpy():
         )
 
     def send_email(self, content, smtp_username, smtp_password, smtp_server):
-        msg = EmailMessage()
-        msg.set_content(content)
+        email = EmailMessage()
+        email.set_content(content)
 
-        msg['Subject'] = f'StockSpy - STOCK AVAILABLE'
-        msg['From'] = smtp_username
-        msg['To'] = smtp_username
+        email['Subject'] = f'StockSpy - STOCK AVAILABLE'
+        email['From'] = smtp_username
+        email['To'] = smtp_username  # TODO: Accept a list of recipients.
 
-        s = smtplib.SMTP(smtp_server)
-        s.ehlo()
-        s.starttls()
-        s.login(smtp_username, smtp_password)
-        s.send_message(msg)
-        s.quit()
+        smtp_client = smtplib.SMTP(smtp_server)
+
+        smtp_client.ehlo()
+        smtp_client.starttls()
+        smtp_client.login(smtp_username, smtp_password)
+        smtp_client.send_message(email)
+        smtp_client.quit()
 
 
 if __name__ == '__main__':
