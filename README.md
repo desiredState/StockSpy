@@ -2,11 +2,11 @@
 
 ## Installation (Linux)
 
-```sh
+```bash
 sudo curl -fsSL https://raw.githubusercontent.com/desiredState/StockSpy/master/wrapper.sh -o /usr/local/bin/stockspy && sudo chmod 755 /usr/local/bin/stockspy
 ```
 
-```sh
+```bash
 stockspy --help
 ```
 
