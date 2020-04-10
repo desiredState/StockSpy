@@ -31,21 +31,19 @@ class StockSpy():
             print(f'Failed to initialise logging with exception:\n{e}')
             sys.exit(1)
 
-    def run(self, debug, interval_max, silent, smtp_username, smtp_password, smtp_server):
+    def run(self, debug, server, alerts, interval_max, smtp_username, smtp_password, smtp_server):
         log = self.logger
+
+        print('\nStockSpy by desiredState.io\n')
 
         if debug:
             log.setLevel(logging.DEBUG)
             log.debug('Debug on.')
 
-        if not silent:
-            # Audio support (for alarms). pygame must be imported after setting the
-            # environment variable to prevent it spamming STDOUT.
-            os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-            import pygame
+        if alerts:
+            log.info('Alerts on.')
 
-            pygame.init()
-            self.alarm = pygame.mixer.Sound('assets/alarm.wav')
+        log.info(f'Maximum interval (mins): {interval_max}')
 
         vendors = Vendors()
         products = Products()
@@ -54,7 +52,7 @@ class StockSpy():
         while True:
             try:
                 interval = random.randint(1, interval_max)
-                products_dict = products.load()
+                product_urls = products.load()
                 results = {
                     'products': [],
                     'nextCheckMins': None,
@@ -62,7 +60,7 @@ class StockSpy():
                 }
 
                 # Product loop.
-                for url in products_dict['products']:
+                for url in product_urls['products']:
                     vendor = urlparse(url)
                     log.info('Checking: {}'.format(vendor.hostname))
 
@@ -70,7 +68,10 @@ class StockSpy():
 
                     # Alert condition.
                     if stock > 0:
-                        self.alert(url, silent, smtp_username, smtp_password, smtp_server)
+                        log.info(f'STOCK AVAILABLE: {url}')
+
+                        if alerts:
+                            self.alert(url, smtp_username, smtp_password, smtp_server)
 
                     results['products'].append(
                         {
@@ -101,9 +102,8 @@ class StockSpy():
                 time.sleep(5 * 60)
                 continue
 
-    def alert(self, url, silent, smtp_username, smtp_password, smtp_server):
+    def alert(self, url, smtp_username, smtp_password, smtp_server):
         log = self.logger
-        log.info(f'STOCK AVAILABLE: {url}')
 
         log.info('Sending email alert...')
         self.send_email(
@@ -112,9 +112,6 @@ class StockSpy():
             smtp_password,
             smtp_server
         )
-
-        if not silent:
-            self.alarm.play()
 
     def send_email(self, content, smtp_username, smtp_password, smtp_server):
         msg = EmailMessage()
@@ -147,28 +144,37 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
+        '-l',
+        '--server',
+        required=False,
+        action='store_true',
+        help='run the StockSpy API server (default: False)',
+        default=False
+    )
+
+    parser.add_argument(
+        '-a',
+        '--alerts',
+        required=False,
+        action='store_true',
+        help='execute stock alerts, e.g, emails (default: False)',
+        default=False
+    )
+
+    parser.add_argument(
         "-i",
         "--interval-max",
         required=False,
         type=int,
         metavar='MINUTES',
-        help="the maximum time to wait between runs in minutes (default: 30)",
-        default=30
-    )
-
-    parser.add_argument(
-        '-x',
-        '--silent',
-        required=False,
-        action='store_true',
-        help='don\'t play an alarm sound (default: False)',
-        default=False
+        help="the maximum time to wait between runs in minutes (default: 5)",
+        default=5
     )
 
     parser.add_argument(
         "-u",
         "--smtp-username",
-        required=True,
+        required=False,
         type=str,
         metavar='USERNAME',
         help="SMTP username"
@@ -177,7 +183,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "-p",
         "--smtp-password",
-        required=True,
+        required=False,
         type=str,
         metavar='PASSWORD',
         help="SMTP password"
@@ -198,8 +204,9 @@ if __name__ == '__main__':
     spy = StockSpy()
     spy.run(
         debug=args.debug,
+        server=args.server,
+        alerts=args.alerts,
         interval_max=args.interval_max,
-        silent=args.silent,
         smtp_username=args.smtp_username,
         smtp_password=args.smtp_password,
         smtp_server=args.smtp_server
