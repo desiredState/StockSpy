@@ -53,8 +53,13 @@ class StockSpy():
         # Main loop.
         while True:
             try:
+                interval = random.randint(1, interval_max)
                 products_dict = products.load()
-                stock_dict = {'stock': []}
+                results = {
+                    'stock': [],
+                    'nextCheckMins': None,
+                    'nextCheckUTC': None
+                }
 
                 # Product loop.
                 for url in products_dict['products']:
@@ -67,7 +72,7 @@ class StockSpy():
                     if stock > 0:
                         self.alert(url, silent, smtp_username, smtp_password, smtp_server)
 
-                    stock_dict['stock'].append(
+                    results['stock'].append(
                         {
                             'timestamp': datetime.datetime.utcnow().isoformat(),
                             'url': url,
@@ -76,11 +81,14 @@ class StockSpy():
                         }
                     )
 
-                log.debug(pprint.pformat(stock_dict))
+                results['nextCheckMins'] = interval
 
-                interval = random.randint(1, interval_max)
+                next_check_utc = datetime.datetime.utcnow() + datetime.timedelta(minutes=interval)
+                results['nextCheckUTC'] = next_check_utc.isoformat()
 
-                log.info(f'Checking again in {interval} minute(s)...')
+                log.debug(pprint.pformat(results))
+
+                log.info(f'Checking again in {interval} minutes(s)...')
                 time.sleep(interval * 60)
 
             except KeyboardInterrupt:
