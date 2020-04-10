@@ -3,8 +3,10 @@
 import logging
 import sys
 import time
+import datetime
 import argparse
 import os
+import pprint
 import random
 import smtplib
 from email.message import EmailMessage
@@ -54,19 +56,27 @@ class StockSpy():
                 products_dict = products.load()
                 stock_dict = {'stock': []}
 
-                # For each product, scrape current stock and add to stock_dict.
+                # Product loop.
                 for url in products_dict['products']:
                     vendor = urlparse(url)
                     log.info('Checking: {}'.format(vendor.hostname))
 
                     stock = vendors.get_stock(url)
 
+                    # Alert condition.
                     if stock > 0:
                         self.alert(url, silent, smtp_username, smtp_password, smtp_server)
 
-                    stock_dict['stock'].append({url: stock})
+                    stock_dict['stock'].append(
+                        {
+                            'timestamp': datetime.datetime.utcnow().isoformat(),
+                            'url': url,
+                            'vendor': vendor.hostname,
+                            'stock': stock
+                        }
+                    )
 
-                log.debug(stock_dict)
+                log.debug(pprint.pformat(stock_dict))
 
                 interval = random.randint(1, interval_max)
 
