@@ -56,7 +56,7 @@ class StockSpy():
                 interval = random.randint(1, interval_max)
                 products_dict = products.load()
                 results = {
-                    'stock': [],
+                    'products': [],
                     'nextCheckMins': None,
                     'nextCheckUTC': None
                 }
@@ -72,7 +72,7 @@ class StockSpy():
                     if stock > 0:
                         self.alert(url, silent, smtp_username, smtp_password, smtp_server)
 
-                    results['stock'].append(
+                    results['products'].append(
                         {
                             'timestamp': datetime.datetime.utcnow().isoformat(),
                             'url': url,
