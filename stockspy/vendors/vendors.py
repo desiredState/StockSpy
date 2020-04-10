@@ -8,6 +8,7 @@ from .scrapers.overclockersuk import OverclockersUK
 from .scrapers.scan import Scan
 from .scrapers.very import Very
 from .scrapers.johnlewis import JohnLewis
+from .scrapers.game import Game
 
 from products.products import Products
 
@@ -24,6 +25,7 @@ class Vendors():
         self.scan = Scan()
         self.very = Very()
         self.johnlewis = JohnLewis()
+        self.game = Game()
 
     def get_stock(self, url):
         vendor = urlparse(url)
@@ -51,5 +53,8 @@ class Vendors():
 
         elif vendor.hostname == 'www.johnlewis.com':
             stock = self.johnlewis.get_stock(url)
+
+        elif vendor.hostname == 'www.game.co.uk':
+            stock = self.game.get_stock(url)
 
         return stock
