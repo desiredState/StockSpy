@@ -2,12 +2,26 @@
 
 ## Installation (Linux)
 
+StockSpy is distributed via Docker, so ensure you have that installed before continuing.
+
 ```bash
 sudo curl -fsSL https://raw.githubusercontent.com/desiredState/StockSpy/master/wrapper.sh -o /usr/local/bin/stockspy && sudo chmod 755 /usr/local/bin/stockspy
 ```
 
 ```bash
 stockspy --help
+```
+
+Once started, StockSpy logs can be observed like so:
+
+```bash
+docker logs -f stockspy
+```
+
+To stop and remove StockSpy, again, just use Docker commands:
+
+```bash
+docker rm -f stockspy
 ```
 
 ## Adding a new Product/Vendor
@@ -43,4 +57,10 @@ self.somevendor = SomeVendor()
 ```python
 elif vendor == 'www.somevendor.com':
     stock = self.somevendor.get_stock(url)
+```
+
+4. Build a new Docker Image:
+
+```bash
+./factory --help
 ```
