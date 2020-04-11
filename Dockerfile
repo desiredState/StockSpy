@@ -3,7 +3,7 @@ FROM selenium/standalone-chrome
 ENV APT_PACKAGES \
     tzdata \
     python3-pip \
-    python-pygame
+    nodejs
 
 ENV PIP_NO_CACHE_DIR false
 
@@ -40,5 +40,6 @@ USER project
 RUN pipenv install --deploy --ignore-pipfile --python 3
 
 EXPOSE 5000
+EXPOSE 3000
 
 ENTRYPOINT ["pipenv", "run",  "python3", "main.py"]
