@@ -2,6 +2,7 @@
 
 import logging
 import sys
+import threading
 import time
 import datetime
 import argparse
@@ -11,11 +12,22 @@ import smtplib
 from email.message import EmailMessage
 from urllib.parse import urlparse
 
+from flask import Flask
+
 from vendors.vendors import Vendors
 from products.products import Products
 
+# global as the StockSpy() class and the outer Flask server need access.
+results = {
+    'products': [],
+    'nextCheckMins': None,
+    'nextCheckUTC': None
+}
+
 
 class StockSpy():
+    global results
+
     def __init__(self):
         try:
             logging.basicConfig(
@@ -30,7 +42,7 @@ class StockSpy():
             print(f'Failed to initialise logging with exception:\n{e}')
             sys.exit(1)
 
-    def run(self, debug, server, alerts, interval_max, smtp_username, smtp_password, smtp_server):
+    def run(self, debug, alerts, interval_max, smtp_username, smtp_password, smtp_server):
         log = self.logger
 
         print('\nStockSpy by desiredState.io\n')
@@ -52,7 +64,10 @@ class StockSpy():
             try:
                 interval = random.randint(1, interval_max)
                 product_urls = products.load()
-                results = {
+
+                # Prevent returning empty results during checks by overwriting
+                # the results global with this once we've finished.
+                new_results = {
                     'products': [],
                     'nextCheckMins': None,
                     'nextCheckUTC': None
@@ -72,7 +87,7 @@ class StockSpy():
                         if alerts:
                             self.alert(url, smtp_username, smtp_password, smtp_server)
 
-                    results['products'].append(
+                    new_results['products'].append(
                         {
                             'timestamp': datetime.datetime.utcnow().isoformat(),
                             'url': url,
@@ -81,10 +96,14 @@ class StockSpy():
                         }
                     )
 
-                results['nextCheckMins'] = interval
+                new_results['nextCheckMins'] = interval
 
                 next_check_utc = datetime.datetime.utcnow() + datetime.timedelta(minutes=interval)
-                results['nextCheckUTC'] = next_check_utc.isoformat()
+                new_results['nextCheckUTC'] = next_check_utc.isoformat()
+
+                # Replace the results global now we've got all the data.
+                results.clear()
+                results.update(new_results)
 
                 log.debug(pprint.pformat(results))
 
@@ -144,15 +163,6 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-l',
-        '--server',
-        required=False,
-        action='store_true',
-        help='run the StockSpy API server (default: False)',
-        default=False
-    )
-
-    parser.add_argument(
         '-a',
         '--alerts',
         required=False,
@@ -200,14 +210,29 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
-
     spy = StockSpy()
-    spy.run(
-        debug=args.debug,
-        server=args.server,
-        alerts=args.alerts,
-        interval_max=args.interval_max,
-        smtp_username=args.smtp_username,
-        smtp_password=args.smtp_password,
-        smtp_server=args.smtp_server
+
+    # Run a stock checker loop thread.
+    stockspyd = threading.Thread(
+        name='stockspyd',
+        target=spy.run,
+        kwargs={
+            'debug': args.debug,
+            'alerts': args.alerts,
+            'interval_max': args.interval_max,
+            'smtp_username': args.smtp_username,
+            'smtp_password': args.smtp_password,
+            'smtp_server': args.smtp_server
+        }
     )
+
+    stockspyd.start()
+
+    # Run a Flask HTTP server.
+    server = Flask(__name__)
+
+    @server.route('/')
+    def index():
+        return results
+
+    server.run()
