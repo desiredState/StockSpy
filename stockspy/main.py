@@ -235,4 +235,4 @@ if __name__ == '__main__':
     def index():
         return results
 
-    server.run()
+    server.run(host='0.0.0.0')
