@@ -6,6 +6,7 @@ import threading
 import time
 import datetime
 import argparse
+import subprocess
 import pprint
 import random
 import smtplib
@@ -147,6 +148,20 @@ class StockSpy():
         smtp_client.send_message(email)
         smtp_client.quit()
 
+    def ui(self, debug):
+        cmd = ''
+        server = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
+
+        while True:
+            out = server.stderr.read(1)
+
+            if out == '' and server.poll() is not None:
+                break
+
+            if out != '':
+                sys.stdout.write(out)
+                sys.stdout.flush()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -210,12 +225,12 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
-    spy = StockSpy()
+    stockspy = StockSpy()
 
-    # Run a stock checker loop thread.
-    stockspyd = threading.Thread(
-        name='stockspyd',
-        target=spy.run,
+    # Start the stock checker thread.
+    scrapers = threading.Thread(
+        name='scrapers',
+        target=stockspy.run,
         kwargs={
             'debug': args.debug,
             'alerts': args.alerts,
@@ -225,10 +240,19 @@ if __name__ == '__main__':
             'smtp_server': args.smtp_server
         }
     )
+    scrapers.start()
 
-    stockspyd.start()
+    # Start the Nuxt Web UI server thread.
+    ui = threading.Thread(
+        name='stockspyui',
+        target=stockspy.ui,
+        kwargs={
+            'debug': args.debug
+        }
+    )
+    ui.start()
 
-    # Run a Flask HTTP server.
+    # Start the Flask API server.
     server = Flask(__name__)
 
     @server.route('/')
