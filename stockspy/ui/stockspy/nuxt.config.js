@@ -1,6 +1,11 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  debug: true,
+  server: {
+    port: 3000,
+    host: '0.0.0.0'
+  },
   mode: 'universal',
   /*
    ** Headers of the page
@@ -80,9 +85,5 @@ export default {
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
-  },
-  server: {
-    port: 3000,
-    host: '0.0.0.0'
   }
 }
