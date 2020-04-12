@@ -10,14 +10,13 @@ if ! hash docker &>/dev/null; then
     exit 1
 fi
 
+echo 'StockSpy > Updating...'
 if [[ "$UPDATE" = true ]] ; then
     docker pull "${NAMESPACE}/${IMAGE}:${TAG}"
 fi
 
 echo 'StockSpy > Starting...'
-
 docker rm -f stockspy &> /dev/null
-
 docker run --name stockspy \
            -d \
            --restart always \
