@@ -147,7 +147,7 @@ class StockSpy():
         smtp_client.quit()
 
     def ui(self, debug):
-        cmd = 'npm --prefix ui/stockspy run dev'
+        cmd = 'npm --prefix ui/stockspy run start'
         subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
 
 
