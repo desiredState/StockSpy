@@ -46,8 +46,6 @@ class StockSpy():
     def run(self, debug, alerts, interval_max, smtp_username, smtp_password, smtp_server):
         log = self.logger
 
-        print('\nStockSpy by desiredState.io\n')
-
         if debug:
             log.setLevel(logging.DEBUG)
             log.debug('Debug on.')
@@ -149,18 +147,8 @@ class StockSpy():
         smtp_client.quit()
 
     def ui(self, debug):
-        cmd = ''
-        server = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
-
-        while True:
-            out = server.stderr.read(1)
-
-            if out == '' and server.poll() is not None:
-                break
-
-            if out != '':
-                sys.stdout.write(out)
-                sys.stdout.flush()
+        cmd = 'npm --prefix ui/stockspy run dev'
+        subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
 
 
 if __name__ == '__main__':

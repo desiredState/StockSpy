@@ -3,7 +3,8 @@ FROM selenium/standalone-chrome
 ENV APT_PACKAGES \
     tzdata \
     python3-pip \
-    nodejs
+    nodejs \
+    npm
 
 ENV PIP_NO_CACHE_DIR false
 
