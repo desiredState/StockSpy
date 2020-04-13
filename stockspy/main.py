@@ -43,7 +43,7 @@ class StockSpy():
             print(f'Failed to initialise logging with exception:\n{e}')
             sys.exit(1)
 
-    def run(self, debug, alerts, interval_max, smtp_username, smtp_password, smtp_server):
+    def run_scrapers(self, debug, alerts, interval_max, smtp_username, smtp_password, smtp_server):
         log = self.logger
 
         if debug:
@@ -84,7 +84,7 @@ class StockSpy():
                         log.info(f'STOCK AVAILABLE: {url}')
 
                         if alerts:
-                            self.alert(url, smtp_username, smtp_password, smtp_server)
+                            self.trigger_alert(url, smtp_username, smtp_password, smtp_server)
 
                     new_results['products'].append(
                         {
@@ -119,7 +119,7 @@ class StockSpy():
                 time.sleep(5 * 60)
                 continue
 
-    def alert(self, url, smtp_username, smtp_password, smtp_server):
+    def trigger_alert(self, url, smtp_username, smtp_password, smtp_server):
         log = self.logger
 
         log.info('Sending email alert...')
@@ -146,7 +146,7 @@ class StockSpy():
         smtp_client.send_message(email)
         smtp_client.quit()
 
-    def ui(self, debug):
+    def run_ui(self, debug):
         cmd = 'npm --prefix ui/stockspy run start'
         subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
 
@@ -216,9 +216,9 @@ if __name__ == '__main__':
     stockspy = StockSpy()
 
     # Start the stock checker thread.
-    scrapers = threading.Thread(
-        name='scrapers',
-        target=stockspy.run,
+    scrapers_thread = threading.Thread(
+        name='stockspy_scrapers',
+        target=stockspy.run_scrapers,
         kwargs={
             'debug': args.debug,
             'alerts': args.alerts,
@@ -228,17 +228,17 @@ if __name__ == '__main__':
             'smtp_server': args.smtp_server
         }
     )
-    scrapers.start()
+    scrapers_thread.start()
 
     # Start the Nuxt Web UI server thread.
-    ui = threading.Thread(
-        name='stockspyui',
-        target=stockspy.ui,
+    ui_thread = threading.Thread(
+        name='stockspy_ui',
+        target=stockspy.run_ui,
         kwargs={
             'debug': args.debug
         }
     )
-    ui.start()
+    ui_thread.start()
 
     # Start the Flask API server.
     server = Flask(__name__)
