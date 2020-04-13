@@ -17,6 +17,7 @@ fi
 
 echo 'StockSpy > Starting...'
 docker rm -f stockspy &> /dev/null
+
 docker run --name stockspy \
            -d \
            --restart always \
@@ -24,4 +25,7 @@ docker run --name stockspy \
            -p 0.0.0.0:80:3000 \
            "${NAMESPACE}/${IMAGE}:${TAG}" "${@}"
 
-echo 'StockSpy > Use "docker logs -f stockspy" to tail logs.'
+echo 'StockSpy > Cleaning up...'
+docker system prune -f &> /dev/null
+
+echo 'StockSpy > Done! Use "docker logs -f stockspy" to tail logs.'

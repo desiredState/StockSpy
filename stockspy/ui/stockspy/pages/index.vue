@@ -4,11 +4,13 @@
       <thead>
         <tr>
           <th class="text-left">Stock</th>
+          <th class="text-left">Vendor</th>
           <th class="text-left">URL</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="product in products.products" :key="product.url">
+          <!-- Stock -->
           <td v-if="product.stock > 0">
             <v-chip class="ma-2" color="green" text-color="white"
               ><v-avatar left>
@@ -22,6 +24,11 @@
               >Unavailable
             </v-chip>
           </td>
+          <!-- Vendor -->
+          <td>
+            {{ product.vendor }}
+          </td>
+          <!-- URL -->
           <td>
             <a :href="product.url">{{ product.url }}</a>
           </td>
