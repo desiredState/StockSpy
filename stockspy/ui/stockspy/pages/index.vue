@@ -36,7 +36,7 @@ import axios from 'axios'
 
 export default {
   async asyncData() {
-    const { data } = await axios.get('http://192.168.0.254:8080')
+    const { data } = await axios.get('http://stockspyapi.desiredstate.io:8080')
     return { products: data }
   }
 }
