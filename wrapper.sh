@@ -12,20 +12,22 @@ fi
 
 echo 'StockSpy > Updating...'
 if [[ "$UPDATE" = true ]] ; then
-    docker pull "${NAMESPACE}/${IMAGE}:${TAG}"
+    docker pull "${NAMESPACE}/${IMAGE}:${TAG}" > /dev/null
 fi
 
-echo 'StockSpy > Starting...'
-docker rm -f stockspy &> /dev/null
+echo 'StockSpy > Removing old version...'
+docker rm -f stockspy > /dev/null
 
+echo 'StockSpy > Starting...'
 docker run --name stockspy \
            -d \
            --restart always \
            -p 0.0.0.0:8080:5000 \
            -p 0.0.0.0:80:3000 \
-           "${NAMESPACE}/${IMAGE}:${TAG}" "${@}"
+           "${NAMESPACE}/${IMAGE}:${TAG}" "${@}" \
+           > /dev/null
 
 echo 'StockSpy > Cleaning up...'
-docker system prune -f &> /dev/null
+docker system prune -f > /dev/null
 
 echo 'StockSpy > Done! Use "docker logs -f stockspy" to tail logs.'
