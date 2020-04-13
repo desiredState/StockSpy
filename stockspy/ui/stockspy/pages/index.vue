@@ -36,7 +36,7 @@ import axios from 'axios'
 
 export default {
   async asyncData() {
-    const { data } = await axios.get('http://127.0.0.1:8080')
+    const { data } = await axios.get('http://127.0.0.1:5000')
     return { products: data }
   }
 }
