@@ -3,6 +3,7 @@
 import logging
 import sys
 import time
+import json
 import asyncio
 import threading
 import websockets
@@ -123,7 +124,7 @@ class StockSpy():
     async def ws_update(self, websocket, path):
         log = self.logger
         log.info(f'Sending results via websocket...')
-        await websocket.send(results)
+        await websocket.send(json.dumps(results))
 
     def trigger_alert(self, url, smtp_username, smtp_password, smtp_server):
         log = self.logger
@@ -238,8 +239,8 @@ if __name__ == '__main__':
     )
     scrapers_thread.start()
 
-    # Websocket asyncio coroutine.
-    ws_update = websockets.serve(stockspy.ws_update, '127.0.0.1', 8765)
+    # Pointless websocket asyncio coroutine.
+    websocket_coroutine = websockets.serve(stockspy.ws_update, '127.0.0.1', 8765)
 
-    asyncio.get_event_loop().run_until_complete(ws_update)
+    asyncio.get_event_loop().run_until_complete(websocket_coroutine)
     asyncio.get_event_loop().run_forever()
