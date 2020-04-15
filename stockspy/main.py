@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from vendors.vendors import Vendors
 from products.products import Products
 
-# global as the StockSpy() class and the outer Flask server need access.
+# global as both the run_scrapers thread and the websocket need access.
 results = {
     'products': [],
     'nextCheckMins': None,
@@ -65,7 +65,7 @@ class StockSpy():
                 product_urls = products.load()
 
                 # Prevent returning empty results during checks by overwriting
-                # the results global with this once we've finished.
+                # the results global with this once we've finished scraping.
                 new_results = {
                     'products': [],
                     'nextCheckMins': None,
