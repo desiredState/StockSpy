@@ -2,18 +2,17 @@
 
 import logging
 import sys
-import threading
 import time
+import asyncio
+import threading
+import websockets
 import datetime
 import argparse
-import subprocess
 import pprint
 import random
 import smtplib
 from email.message import EmailMessage
 from urllib.parse import urlparse
-
-from flask import Flask
 
 from vendors.vendors import Vendors
 from products.products import Products
@@ -104,6 +103,9 @@ class StockSpy():
                 results.clear()
                 results.update(new_results)
 
+                # Send the updated results via websocket.
+                # self.ws_update(results)
+
                 log.debug(pprint.pformat(results))
 
                 log.info(f'Checking again in {interval} minutes(s)...')
@@ -111,13 +113,17 @@ class StockSpy():
 
             except KeyboardInterrupt:
                 log.info('Exiting...')
-                sys.exit(0)
 
             except Exception as e:
                 log.error(f'An error occured:\n{e}')
                 log.info(f'Trying again in 5 minutes...')
                 time.sleep(5 * 60)
                 continue
+
+    async def ws_update(self, websocket, path):
+        log = self.logger
+        log.info(f'Sending results via websocket...')
+        await websocket.send(results)
 
     def trigger_alert(self, url, smtp_username, smtp_password, smtp_server):
         log = self.logger
@@ -145,10 +151,6 @@ class StockSpy():
         smtp_client.login(smtp_username, smtp_password)
         smtp_client.send_message(email)
         smtp_client.quit()
-
-    def run_ui(self, debug):
-        cmd = 'npm --prefix ui/stockspy run start'
-        subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
 
 
 if __name__ == '__main__':
@@ -215,7 +217,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     stockspy = StockSpy()
 
-    # Start the stock checker thread.
+    #
+    # Entrypoint.
+    #
+
+    # Scrapers thread.
+    # This has to be a thread as blocking the websocket asyncio coroutine would
+    # prevent results from being retrieved by the UI.
     scrapers_thread = threading.Thread(
         name='stockspy_scrapers',
         target=stockspy.run_scrapers,
@@ -230,21 +238,8 @@ if __name__ == '__main__':
     )
     scrapers_thread.start()
 
-    # Start the Nuxt Web UI server thread.
-    ui_thread = threading.Thread(
-        name='stockspy_ui',
-        target=stockspy.run_ui,
-        kwargs={
-            'debug': args.debug
-        }
-    )
-    ui_thread.start()
+    # Websocket asyncio coroutine.
+    ws_update = websockets.serve(stockspy.ws_update, '127.0.0.1', 8765)
 
-    # Start the Flask API server.
-    server = Flask(__name__)
-
-    @server.route('/')
-    def index():
-        return results
-
-    server.run(host='0.0.0.0')
+    asyncio.get_event_loop().run_until_complete(ws_update)
+    asyncio.get_event_loop().run_forever()
