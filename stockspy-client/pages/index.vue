@@ -39,12 +39,23 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
-  async asyncData() {
-    const { data } = await axios.get('http://stockspyapi.desiredstate.io:8080')
-    return { products: data }
+  methods: {
+    connect() {
+      this.socket = new WebSocket('wss://127.0.0.1:8080')
+
+      this.socket.onopen = () => {
+        this.status = 'connected'
+        this.logs.push({
+          event: 'Connected to',
+          data: 'wss://echo.websocket.org'
+        })
+
+        this.socket.onmessage = ({ data }) => {
+          this.logs.push(data)
+        }
+      }
+    }
   }
 }
 </script>

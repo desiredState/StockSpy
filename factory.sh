@@ -40,7 +40,7 @@ function build {
 }
 
 function test {
-    VERSION="${TAG}" UPDATE="${UPDATE}" "./${1}-wrapper.sh" "${@:3}"
+    VERSION="${TAG}" UPDATE="${UPDATE}" ./wrapper.sh "${1}" "${@:3}"
 }
 
 function push {
