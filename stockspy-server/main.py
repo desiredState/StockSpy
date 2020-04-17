@@ -240,7 +240,7 @@ if __name__ == '__main__':
     scrapers_thread.start()
 
     # Pointless websocket asyncio coroutine.
-    ws_coroutine = websockets.serve(stockspy.ws_update, '127.0.0.1', 8765)
+    ws_coroutine = websockets.serve(stockspy.ws_update, '0.0.0.0', 5000)
 
     asyncio.get_event_loop().run_until_complete(ws_coroutine)
     asyncio.get_event_loop().run_forever()

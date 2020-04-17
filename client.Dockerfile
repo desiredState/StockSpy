@@ -23,7 +23,8 @@ RUN addgroup --system stockspy && \
     adduser --system stockspy && \
     usermod --group stockspy stockspy
 
-RUN echo "stockspy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/stockspy && \
+RUN mkdir /etc/sudoers.d && \
+    echo "stockspy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/stockspy && \
     chmod 0440 /etc/sudoers.d/stockspy
 
 WORKDIR /home/stockspy
@@ -36,7 +37,7 @@ USER stockspy
 
 ENV HOME /home/stockspy
 
-EXPOSE 5000
+EXPOSE 3000
 
 RUN npm install && \
     npm run build

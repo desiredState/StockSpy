@@ -1,3 +1,5 @@
+# IGNORE THESE DOCS FOR NOW - COMPLETE REBASE IN PROGRESS!
+
 # StockSpy
 
 ## Installation (Linux)

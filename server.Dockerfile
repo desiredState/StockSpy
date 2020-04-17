@@ -40,6 +40,6 @@ ENV HOME /home/stockspy
 
 RUN pipenv install --deploy --ignore-pipfile --python 3
 
-EXPOSE 3000
+EXPOSE 5000
 
 ENTRYPOINT ["pipenv", "run",  "python3", "main.py"]

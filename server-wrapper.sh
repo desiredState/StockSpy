@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 NAMESPACE=${NAMESPACE:='desiredstate'}
-IMAGE=${IMAGE:='stockspy'}
+IMAGE=${IMAGE:='stockspy-server'}
 TAG=${VERSION:='latest'}
 UPDATE=${UPDATE:=true}
 
@@ -16,18 +16,17 @@ if [[ "$UPDATE" = true ]] ; then
 fi
 
 echo 'StockSpy > Removing old version...'
-docker rm -f stockspy > /dev/null
+docker rm -f stockspy-server > /dev/null
 
 echo 'StockSpy > Starting...'
-docker run --name stockspy \
+docker run --name stockspy-server \
            -d \
            --restart always \
            -p 0.0.0.0:8080:5000 \
-           -p 0.0.0.0:80:3000 \
            "${NAMESPACE}/${IMAGE}:${TAG}" "${@}" \
            > /dev/null
 
 echo 'StockSpy > Cleaning up...'
 docker system prune -f > /dev/null
 
-echo 'StockSpy > Done! Use "docker logs -f stockspy" to tail logs.'
+echo 'StockSpy > Done! Use "docker logs -f stockspy-server" to tail logs.'

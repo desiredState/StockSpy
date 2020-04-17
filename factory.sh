@@ -13,8 +13,8 @@ positional arguments:
 
   {build,test,push,all}
     build               build the Docker Image
-    test                run tests
-    buildtest           both of the above in that order
+    test {args}         run the container
+    buildtest {args}    both of the above in that order
     push                push the Docker Image
 
 optional arguments:
@@ -23,7 +23,6 @@ EOF
 }
 
 function check_deps {
-    # Dependencies which should be in PATH.
     DEPS=( 'docker' )
 
     for i in "${DEPS[@]}"; do
@@ -35,18 +34,16 @@ function check_deps {
 }
 
 function build {
-    # Build Docker Image.
     echo -e "${MAGENTA}FACTORY > Building the ${NAMESPACE}/${IMAGE}:${TAG} Docker Image...${NONE}"
-    docker build -t "${NAMESPACE}/${IMAGE}:${TAG}" .
+    docker build -f "${1}.Dockerfile" -t "${NAMESPACE}/${IMAGE}:${TAG}" .
     echo -e "${GREEN}FACTORY > OK.${NONE}"
 }
 
 function test {
-    VERSION="${TAG}" UPDATE=${UPDATE} ./wrapper.sh "${@}"
+    VERSION="${TAG}" UPDATE="${UPDATE}" "./${1}-wrapper.sh" "${@:3}"
 }
 
 function push {
-    # Push Docker Image.
     echo -e "${MAGENTA}FACTORY > Pushing the ${NAMESPACE}/${IMAGE}:${TAG} Docker Image...${NONE}"
     docker push "${NAMESPACE}/${IMAGE}:${TAG}"
     echo -e "${GREEN}FACTORY > OK.${NONE}"
@@ -70,10 +67,10 @@ check_deps
 
 case $1 in
     client)
-        export IMAGE=${IMAGE:='stockspy-client'}
+        export IMAGE=${IMAGE:="stockspy-${1}"}
         ;;
     server)
-        export IMAGE=${IMAGE:='stockspy-server'}
+        export IMAGE=${IMAGE:="stockspy-${1}"}
         ;;
     *)
         usage
@@ -82,14 +79,14 @@ esac
 
 case $2 in
     build)
-        build
+        build "${1}"
         ;;
     test)
-        test "${@:3}"
+        test "${@}"
         ;;
     buildtest)
-        build
-        test "${@:3}"
+        build "${1}"
+        test "${@}"
         ;;
     push)
         push
