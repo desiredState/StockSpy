@@ -8,5 +8,3 @@ flake8 = "*"
 
 [packages]
 selenium = "*"
-pygame = "*"
-flask = "*"

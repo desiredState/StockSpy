@@ -31,8 +31,6 @@ RUN echo "stockspy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/stockspy && \
 WORKDIR /home/stockspy
 
 COPY stockspy-server .
-COPY Pipfile .
-COPY Pipfile.lock .
 
 RUN chown -R stockspy:stockspy .
 
