@@ -4,9 +4,13 @@ set -e
 
 function usage {
     cat <<EOF
-usage: factory [-h] {build,test,push,all} ...
+usage: factory [-h] {client,server} {build,test,push,all} ...
 
 positional arguments:
+  {client,server}
+    client              operate on the client build
+    server              operate on the server build
+
   {build,test,push,all}
     build               build the Docker Image
     test                run tests
@@ -48,29 +52,44 @@ function push {
     echo -e "${GREEN}FACTORY > OK.${NONE}"
 }
 
-# Environment variable overrides.
-export NAMESPACE=${NAMESPACE:='desiredstate'}
-export IMAGE=${IMAGE:='stockspy'}
-export TAG=${VERSION:='latest'}
-export UPDATE=${UPDATE:=false} # false as we're building the Image locally.
+#
+# Entrypoint.
+#
 
 MAGENTA=$(tput setaf 5)
 GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NONE=$(tput sgr 0)
 
+# Environment variable overrides.
+export NAMESPACE=${NAMESPACE:='desiredstate'}
+export TAG=${VERSION:='latest'}
+export UPDATE=${UPDATE:=false}
+
 check_deps
 
 case $1 in
+    client)
+        export IMAGE=${IMAGE:='stockspy-client'}
+        ;;
+    server)
+        export IMAGE=${IMAGE:='stockspy-server'}
+        ;;
+    *)
+        usage
+        exit 1
+esac
+
+case $2 in
     build)
         build
         ;;
     test)
-        test "${@:2}"
+        test "${@:3}"
         ;;
     buildtest)
         build
-        test "${@:2}"
+        test "${@:3}"
         ;;
     push)
         push

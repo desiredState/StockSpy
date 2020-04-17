@@ -1,34 +1,44 @@
+# StockSpy Client
+
 FROM node
 
-ENV APT_PACKAGES \
-    git
-
-
-
-
-
-# create destination directory
-RUN mkdir -p /usr/src/nuxt-app
-WORKDIR /usr/src/nuxt-app
-
-# update and install dependency
-RUN apk update && apk upgrade
-RUN apk add git
-
-# copy the app, note .dockerignore
-COPY . /usr/src/nuxt-app/
-RUN npm install
-
-# build necessary, even if no static files are needed,
-# since it builds the server as well
-RUN npm run build
-
-# expose 5000 on container
-EXPOSE 5000
-
-
 ENV NUXT_HOST=0.0.0.0
+
 ENV NUXT_PORT=5000
 
-# start the app
-CMD [ "npm", "start" ] 
+ENV APT_PACKAGES \
+    tzdata \
+    git
+
+USER root
+
+RUN apt-get update && \
+    apt-get -y install $APT_PACKAGES && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN cp /usr/share/zoneinfo/Europe/London /etc/localtime && \
+    echo "Europe/London" > /etc/timezone
+
+RUN addgroup --system stockspy && \
+    adduser --system stockspy && \
+    usermod --group stockspy stockspy
+
+RUN echo "stockspy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/stockspy && \
+    chmod 0440 /etc/sudoers.d/stockspy
+
+WORKDIR /home/stockspy
+
+COPY stockspy-client .
+
+RUN chown -R stockspy:stockspy .
+
+USER stockspy
+
+ENV HOME /home/stockspy
+
+EXPOSE 5000
+
+RUN npm install && \
+    npm run build
+
+CMD ["npm", "start"]

@@ -1,3 +1,5 @@
+# StockSpy Server
+
 FROM selenium/standalone-chrome
 
 ENV APT_PACKAGES \
