@@ -6,6 +6,7 @@ import time
 import json
 import asyncio
 import threading
+import _thread
 import websockets
 import datetime
 import argparse
@@ -18,7 +19,10 @@ from urllib.parse import urlparse
 from vendors.vendors import Vendors
 from products.products import Products
 
-# global as both the run_scrapers thread and the websocket need access.
+# Used for cleaning up threads/coroutines.
+terminate = False
+
+# Global as both the run_scrapers thread and the websocket need access.
 results = {
     'products': [],
     'nextCheckMins': None,
@@ -27,6 +31,7 @@ results = {
 
 
 class StockSpy():
+    global terminate
     global results
 
     def __init__(self):
@@ -59,7 +64,7 @@ class StockSpy():
         products = Products()
 
         # Main loop.
-        while True:
+        while not terminate:
             try:
                 interval = random.randint(1, interval_max)
                 product_urls = products.load()
@@ -114,6 +119,8 @@ class StockSpy():
 
             except KeyboardInterrupt:
                 log.info('Exiting...')
+                terminate = True
+                _thread.interrupt_main()
 
             except Exception as e:
                 log.error(f'An error occured:\n{e}')
@@ -222,25 +229,30 @@ if __name__ == '__main__':
     # Entrypoint.
     #
 
-    # Scrapers thread.
-    # This has to be a thread as blocking the websocket asyncio coroutine would
-    # prevent results from being retrieved by the UI.
-    scrapers_thread = threading.Thread(
-        name='stockspy_scrapers',
-        target=stockspy.run_scrapers,
-        kwargs={
-            'debug': args.debug,
-            'alerts': args.alerts,
-            'interval_max': args.interval_max,
-            'smtp_username': args.smtp_username,
-            'smtp_password': args.smtp_password,
-            'smtp_server': args.smtp_server
-        }
-    )
-    scrapers_thread.start()
+    try:
+        # Scrapers thread.
+        # This has to be a thread as blocking the websocket asyncio coroutine would
+        # prevent results from being retrieved by the UI.
+        scrapers_thread = threading.Thread(
+            name='stockspy_scrapers',
+            target=stockspy.run_scrapers,
+            kwargs={
+                'debug': args.debug,
+                'alerts': args.alerts,
+                'interval_max': args.interval_max,
+                'smtp_username': args.smtp_username,
+                'smtp_password': args.smtp_password,
+                'smtp_server': args.smtp_server
+            }
+        )
+        scrapers_thread.start()
 
-    # Pointless websocket asyncio coroutine.
-    ws_coroutine = websockets.serve(stockspy.ws_update, '0.0.0.0', 5000)
+        # Pointless websocket asyncio coroutine.
+        ws_coroutine = websockets.serve(stockspy.ws_update, '0.0.0.0', 5000)
 
-    asyncio.get_event_loop().run_until_complete(ws_coroutine)
-    asyncio.get_event_loop().run_forever()
+        asyncio.get_event_loop().run_until_complete(ws_coroutine)
+        asyncio.get_event_loop().run_forever()
+
+    except KeyboardInterrupt:
+        print('Exiting...')
+        terminate = True

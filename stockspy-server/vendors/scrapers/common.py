@@ -65,8 +65,9 @@ WebGLRenderingContext.prototype.getParameter = function(parameter) {
                 stock = func(self, url)
 
             except NoSuchElementException:
-                stock = 1  # TODO: Handle errors better.
+                stock = 'error'
 
+            self.scraper.close()
             self.scraper.quit()
 
             return stock

@@ -4,7 +4,7 @@ set -e
 
 function usage {
     cat <<EOF
-usage: factory [-h] {build,test,push,all} {client,server} ...
+usage: factory [-h] {build,test,buildtest,push} {client,server} ...
 
 positional arguments:
   {build,test,push,all}
