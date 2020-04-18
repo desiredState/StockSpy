@@ -73,7 +73,7 @@ WebGLRenderingContext.prototype.getParameter = function(parameter) {
             self.scraper.quit()
 
             # Selenium generously leaves tonnes of defunct chrome processes
-            # laying around despire calling quit() above.
+            # laying around despire calling quit() above, so let's reap them.
             try:
                 is_pid = True
                 while is_pid:
