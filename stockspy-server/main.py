@@ -49,6 +49,7 @@ class StockSpy():
             sys.exit(1)
 
     def run_scrapers(self, debug, alerts, interval_max, smtp_username, smtp_password, smtp_server):
+        global terminate
         log = self.logger
 
         if debug:

@@ -1,3 +1,5 @@
+import os
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.common.exceptions import NoSuchElementException
@@ -65,10 +67,20 @@ WebGLRenderingContext.prototype.getParameter = function(parameter) {
                 stock = func(self, url)
 
             except NoSuchElementException:
-                stock = 'error'
+                stock = 9999
 
             self.scraper.close()
             self.scraper.quit()
+
+            # Selenium generously leaves tonnes of defunct chrome processes
+            # laying around despire calling quit() above.
+            try:
+                is_pid = True
+                while is_pid:
+                    is_pid = os.waitpid(-1, os.WNOHANG)
+
+            except ChildProcessError:
+                pass
 
             return stock
 
