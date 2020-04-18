@@ -12,11 +12,11 @@ UPDATE=${UPDATE:=true}
 case $1 in
     client)
         export IMAGE=${IMAGE:="stockspy-${1}"}
-        export ARGS='-p=0.0.0.0:80:3000'
+        export ARGS='-p 0.0.0.0:80:3000'
         ;;
     server)
         export IMAGE=${IMAGE:="stockspy-${1}"}
-        export ARGS='-p=0.0.0.0:8080:5000'
+        export ARGS='-p 0.0.0.0:8080:5000'
         ;;
     *)
         echo 'Usage: stockspy {client,server}'
@@ -24,7 +24,7 @@ case $1 in
 esac
 
 echo 'StockSpy > Updating...'
-if [[ "$UPDATE" = true ]] ; then
+if [[ $UPDATE = true ]] ; then
     docker pull "${NAMESPACE}/${IMAGE}:${TAG}" > /dev/null
 fi
 
@@ -35,8 +35,8 @@ echo 'StockSpy > Starting...'
 docker run --name "stockspy-${1}" \
            -d \
            --restart always \
-           "${ARGS}" \
-           "${NAMESPACE}/${IMAGE}:${TAG}" "${@}" \
+           ${ARGS} \
+           "${NAMESPACE}/${IMAGE}:${TAG}" ${@:2} \
            > /dev/null
 
 echo 'StockSpy > Cleaning up...'

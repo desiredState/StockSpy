@@ -4,18 +4,18 @@ set -e
 
 function usage {
     cat <<EOF
-usage: factory [-h] {client,server} {build,test,push,all} ...
+usage: factory [-h] {build,test,push,all} {client,server} ...
 
 positional arguments:
-  {client,server}
-    client              operate on the client build
-    server              operate on the server build
-
   {build,test,push,all}
     build               build the Docker Image
     test {args}         run the container
     buildtest {args}    both of the above in that order
     push                push the Docker Image
+
+    {client,server}
+      client              operate on the client build
+      server              operate on the server build
 
 optional arguments:
   -h, --help            display this help message
@@ -40,7 +40,7 @@ function build {
 }
 
 function test {
-    VERSION="${TAG}" UPDATE="${UPDATE}" ./wrapper.sh "${1}" "${@:3}"
+    VERSION="${TAG}" UPDATE="${UPDATE}" ./wrapper.sh "${2}" "${@:3}"
 }
 
 function push {
@@ -65,27 +65,27 @@ export UPDATE=${UPDATE:=false}
 
 check_deps
 
-case $1 in
+case $2 in
     client)
-        export IMAGE=${IMAGE:="stockspy-${1}"}
+        export IMAGE=${IMAGE:="stockspy-${2}"}
         ;;
     server)
-        export IMAGE=${IMAGE:="stockspy-${1}"}
+        export IMAGE=${IMAGE:="stockspy-${2}"}
         ;;
     *)
         usage
         exit 1
 esac
 
-case $2 in
+case $1 in
     build)
-        build "${1}"
+        build "${2}"
         ;;
     test)
         test "${@}"
         ;;
     buildtest)
-        build "${1}"
+        build "${2}"
         test "${@}"
         ;;
     push)
