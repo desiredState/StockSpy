@@ -19,7 +19,7 @@ case $1 in
         export ARGS='-p 0.0.0.0:8080:5000'
         ;;
     *)
-        echo 'Usage: stockspy {client,server}'
+        echo 'Usage: stockspy {client,server} [args]'
         exit 1
 esac
 
