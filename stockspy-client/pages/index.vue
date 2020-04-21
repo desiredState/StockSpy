@@ -38,4 +38,26 @@
   </v-simple-table>
 </template>
 
-<script></script>
+<script>
+// let socket = new WebSocket('ws://127.0.0.1:8080')
+
+// socket.onopen = function(e) {
+//   console.log('Requesting stock...')
+// }
+
+// socket.onmessage = function(event) {
+//   console.log(`Received stock: ${event.data}`)
+// }
+
+// socket.onclose = function(event) {
+//   if (event.wasClean) {
+//     console.log('Connection closed.')
+//   } else {
+//     console.log('Connection error.')
+//   }
+// }
+
+// socket.onerror = function(error) {
+//   console.log(`Error: ${error.message}`)
+// }
+</script>
