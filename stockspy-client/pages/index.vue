@@ -38,24 +38,4 @@
   </v-simple-table>
 </template>
 
-<script>
-export default {
-  methods: {
-    connect() {
-      this.socket = new WebSocket('wss://127.0.0.1:8080')
-
-      this.socket.onopen = () => {
-        this.status = 'connected'
-        this.logs.push({
-          event: 'Connected to',
-          data: 'wss://echo.websocket.org'
-        })
-
-        this.socket.onmessage = ({ data }) => {
-          this.logs.push(data)
-        }
-      }
-    }
-  }
-}
-</script>
+<script></script>
