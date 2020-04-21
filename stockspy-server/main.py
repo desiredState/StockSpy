@@ -142,7 +142,7 @@ class StockSpy():
                 await websocket.send(json.dumps(results))
 
                 last_update = results['nextCheckUTC']
-                await asyncio.sleep(60)
+                await asyncio.sleep(1)
 
     def trigger_alert(self, url, smtp_username, smtp_password, smtp_server):
         log = self.logger
