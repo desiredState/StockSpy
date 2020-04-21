@@ -131,8 +131,18 @@ class StockSpy():
 
     async def ws_update(self, websocket, path):
         log = self.logger
-        log.info(f'Sending results via websocket...')
+
+        log.info('Sending stock to new client...')
         await websocket.send(json.dumps(results))
+
+        last_update = results['nextCheckUTC']
+        while True:
+            if last_update != results['nextCheckUTC']:
+                log.info('Sending updated stock to clients...')
+                await websocket.send(json.dumps(results))
+
+                last_update = results['nextCheckUTC']
+                await asyncio.sleep(60)
 
     def trigger_alert(self, url, smtp_username, smtp_password, smtp_server):
         log = self.logger
