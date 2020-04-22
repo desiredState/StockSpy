@@ -11,7 +11,11 @@
   "python.linting.flake8Args": ["--ignore=E501"],
   "python.linting.enabled": true,
   "[python]": {
-    "editor.rulers": [79, 120]
+    "editor.rulers": [
+      79,
+      120
+    ],
+    "editor.defaultFormatter": "ms-python.python"
   },
   "python.pythonPath": "/Users/dmi29/.local/share/virtualenvs/stockspy-n7SzIvOM/bin/python",
 

@@ -90,7 +90,12 @@ class StockSpy():
                         log.info(f'STOCK AVAILABLE: {url}')
 
                         if alerts:
-                            self.trigger_alert(url, smtp_username, smtp_password, smtp_server)
+                            self.trigger_alert(
+                                url,
+                                smtp_username,
+                                smtp_password,
+                                smtp_server
+                            )
 
                     new_results['products'].append(
                         {
