@@ -39,25 +39,24 @@
 </template>
 
 <script>
-// let socket = new WebSocket('ws://127.0.0.1:8080')
+export default {
+  data() {
+    return {
+      products: null
+    }
+  },
+  mounted() {
+    // let self = this
+    let socket = new WebSocket('ws://127.0.0.1:8080')
 
-// socket.onopen = function(e) {
-//   console.log('Requesting stock...')
-// }
+    // socket.onmessage = function(event) {
+    //   self.products = event.data
+    //   alert(self.products)
+    // }
 
-// socket.onmessage = function(event) {
-//   console.log(`Received stock: ${event.data}`)
-// }
-
-// socket.onclose = function(event) {
-//   if (event.wasClean) {
-//     console.log('Connection closed.')
-//   } else {
-//     console.log('Connection error.')
-//   }
-// }
-
-// socket.onerror = function(error) {
-//   console.log(`Error: ${error.message}`)
-// }
+    socket.onmessage = function(event) {
+      this.products = event.data
+    }.bind(this)
+  }
+}
 </script>

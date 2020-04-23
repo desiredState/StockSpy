@@ -134,21 +134,6 @@ class StockSpy():
                 time.sleep(5 * 60)
                 continue
 
-    async def ws_update(self, websocket, path):
-        log = self.logger
-
-        log.info('Sending stock to new client...')
-        await websocket.send(json.dumps(results))
-
-        last_update = results['nextCheckUTC']
-        while True:
-            if last_update != results['nextCheckUTC']:
-                log.info('Sending updated stock to clients...')
-                await websocket.send(json.dumps(results))
-
-                last_update = results['nextCheckUTC']
-                await asyncio.sleep(1)
-
     def trigger_alert(self, url, smtp_username, smtp_password, smtp_server):
         log = self.logger
 
@@ -175,6 +160,21 @@ class StockSpy():
         smtp_client.login(smtp_username, smtp_password)
         smtp_client.send_message(email)
         smtp_client.quit()
+
+    async def ws_handler(self, websocket, path):
+        log = self.logger
+
+        log.info('Sending stock to new client...')
+        await websocket.send(json.dumps(results))
+
+        last_update = results['nextCheckUTC']
+        while True:
+            if last_update != results['nextCheckUTC']:
+                log.info('Sending updated stock to clients...')
+                await websocket.send(json.dumps(results))
+
+                last_update = results['nextCheckUTC']
+                await asyncio.sleep(1)
 
 
 if __name__ == '__main__':
@@ -264,9 +264,9 @@ if __name__ == '__main__':
         scrapers_thread.start()
 
         # Pointless websocket asyncio coroutine.
-        ws_coroutine = websockets.serve(stockspy.ws_update, '0.0.0.0', 5000)
+        ws_handler = websockets.serve(stockspy.ws_handler, '0.0.0.0', 5000)
 
-        asyncio.get_event_loop().run_until_complete(ws_coroutine)
+        asyncio.get_event_loop().run_until_complete(ws_handler)
         asyncio.get_event_loop().run_forever()
 
     except KeyboardInterrupt:
