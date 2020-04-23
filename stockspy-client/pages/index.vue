@@ -6,6 +6,7 @@
           <th class="text-left">Stock</th>
           <th class="text-left">Vendor</th>
           <th class="text-left">URL</th>
+          <th class="text-left">Last checked</th>
         </tr>
       </thead>
       <tbody>
@@ -31,6 +32,10 @@
           <!-- URL -->
           <td>
             <a :href="product.url">{{ product.url }}</a>
+          </td>
+          <!-- Timestamp -->
+          <td>
+            {{ product.timestamp }}
           </td>
         </tr>
       </tbody>
