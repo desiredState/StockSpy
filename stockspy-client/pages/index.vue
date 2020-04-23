@@ -1,6 +1,6 @@
 <template>
   <v-simple-table dark>
-    <template v-slot:default>
+    <template v-slot:default v-if="products">
       <thead>
         <tr>
           <th class="text-left">Stock</th>
@@ -35,6 +35,7 @@
         </tr>
       </tbody>
     </template>
+    <p v-else>Loading stock...</p>
   </v-simple-table>
 </template>
 
@@ -46,16 +47,10 @@ export default {
     }
   },
   mounted() {
-    // let self = this
     let socket = new WebSocket('ws://127.0.0.1:8080')
 
-    // socket.onmessage = function(event) {
-    //   self.products = event.data
-    //   alert(self.products)
-    // }
-
     socket.onmessage = function(event) {
-      this.products = event.data
+      this.products = JSON.parse(event.data)
     }.bind(this)
   }
 }
