@@ -1,4 +1,5 @@
 import os
+import logging
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -18,6 +19,8 @@ class Vendor():
 
     def scraper(func):
         def wrapper(self, url):
+            self.logger = logging.getLogger('stockspy')
+
             headers = {'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
                        '10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome'
                        '/77.0.3865.90 Safari/537.36'}

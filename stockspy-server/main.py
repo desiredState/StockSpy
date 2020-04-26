@@ -93,7 +93,12 @@ class StockSpy():
 
                     except KeyError:
                         log.info(
-                            f'Couldn\'t find the scrape element on the Vendor\'s webpage ({vendor.hostname}). Ignoring...')
+                            f'Couldn\'t find the Vendor\'s scrape element on the webpage ({vendor.hostname}). Ignoring...')
+                        continue
+
+                    except EnvironmentError:
+                        log.info(
+                            f'Missing ENV variable(s) required by Vendor ({vendor.hostname}). Ignoring...')
                         continue
 
                     # Alert condition.
