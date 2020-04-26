@@ -63,7 +63,7 @@ self.somevendor = SomeVendor()
 ```
 
 ```python
-elif vendor == 'www.somevendor.com':
+elif vendor.hostname == 'www.somevendor.com':
     stock = self.somevendor.get_stock(url)
 ```
 

@@ -1,6 +1,5 @@
 <template>
-  <!-- Table -->
-  <v-simple-table>
+  <v-simple-table dark>
     <template v-slot:default v-if="products">
       <thead>
         <tr>
@@ -47,13 +46,8 @@
 
 <script>
 export default {
-  props: {
-    source: String
-  },
-
   data() {
     return {
-      drawer: null,
       products: null
     }
   },

@@ -83,7 +83,18 @@ class StockSpy():
                     vendor = urlparse(url)
                     log.info('Checking: {}'.format(vendor.hostname))
 
-                    stock = vendors.get_stock(url)
+                    try:
+                        stock = vendors.get_stock(url)
+
+                    except ValueError:
+                        log.info(
+                            f'Unsupported Vendor ({vendor.hostname}) in products.json. Ignoring...')
+                        continue
+
+                    except KeyError:
+                        log.info(
+                            f'Couldn\'t find the scrape element on the Vendor\'s webpage ({vendor.hostname}). Ignoring...')
+                        continue
 
                     # Alert condition.
                     if stock > 0:
