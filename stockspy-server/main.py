@@ -126,9 +126,6 @@ class StockSpy():
                 results.clear()
                 results.update(new_results)
 
-                # Send the updated results via websocket.
-                # self.ws_update(results)
-
                 log.debug(pprint.pformat(results))
 
                 log.info(f'Checking again in {interval} minutes(s)...')
