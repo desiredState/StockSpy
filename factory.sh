@@ -14,8 +14,8 @@ positional arguments:
     push                push the Docker Image
 
     {client,server}
-      client              operate on the client build
-      server              operate on the server build
+      client            operate on the client build
+      server            operate on the server build
 
 optional arguments:
   -h, --help            display this help message

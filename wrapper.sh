@@ -5,23 +5,22 @@ if ! hash docker &>/dev/null; then
     exit 1
 fi
 
-NAMESPACE=${NAMESPACE:='desiredstate'}
-TAG=${VERSION:='latest'}
-UPDATE=${UPDATE:=true}
-
 case $1 in
     client)
-        export IMAGE=${IMAGE:="stockspy-${1}"}
-        export ARGS='-p 0.0.0.0:80:3000'
+        ARGS='-p 0.0.0.0:80:3000'
         ;;
     server)
-        export IMAGE=${IMAGE:="stockspy-${1}"}
-        export ARGS='-p 0.0.0.0:8080:5000'
+        ARGS='-p 0.0.0.0:8080:5000'
         ;;
     *)
         echo 'Usage: stockspy {client,server} [args]'
         exit 1
 esac
+
+NAMESPACE=${NAMESPACE:='desiredstate'}
+IMAGE=${IMAGE:="stockspy-${1}"}
+TAG=${VERSION:='latest'}
+UPDATE=${UPDATE:=true}
 
 echo 'StockSpy > Updating...'
 if [[ $UPDATE = true ]] ; then
@@ -29,7 +28,7 @@ if [[ $UPDATE = true ]] ; then
 fi
 
 echo 'StockSpy > Removing old version...'
-docker rm -f "stockspy-${1}" > /dev/null
+docker rm -f "stockspy-${1}" &> /dev/null
 
 echo 'StockSpy > Starting...'
 docker run --name "stockspy-${1}" \

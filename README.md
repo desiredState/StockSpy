@@ -1,35 +1,38 @@
-# IGNORE THESE DOCS FOR NOW - COMPLETE REBASE IN PROGRESS!
-
 # StockSpy
 
-## Installation (Linux)
+StockSpy is a modular stock monitoring and alerting platform.
+
+## Installation (Bash environments)
 
 StockSpy is distributed via Docker, so ensure you have that installed before continuing.
 
 ```bash
-sudo curl -fsSL https://raw.githubusercontent.com/desiredState/StockSpy/master/wrapper.sh -o /usr/local/bin/stockspy && sudo chmod 755 /usr/local/bin/stockspy
+$ sudo curl -fsSL https://raw.githubusercontent.com/desiredState/StockSpy/master/wrapper.sh -o /usr/local/bin/stockspy && sudo chmod 755 /usr/local/bin/stockspy
 ```
 
 ```bash
-stockspy --help
+$ stockspy server start
+$ stockspy client start
 ```
 
 Once started, StockSpy logs can be observed like so:
 
 ```bash
-docker logs -f stockspy
+$ stockspy server logs
+$ stockspy client logs
 ```
 
 To stop and remove StockSpy, again, just use Docker commands:
 
 ```bash
-docker rm -f stockspy
+$ stockspy server stop
+$ stockspy client stop
 ```
 
 ## Adding a new Product/Vendor
 
-1. Add the new product URL(s) to the `products.json` file.
-2. Add a new `<vendor>.py` file in the `vendors/scrapers/` directory, containing something like:
+1. Add the new product URL(s) to the `stockspy-server/products.json` file.
+2. Add a new `<vendor>.py` file in the `stockspy-server/vendors/scrapers/` directory, containing something like:
 
 ```python
 from .common import Vendor
@@ -52,7 +55,7 @@ class SomeVendor(Vendor):
 
 ```
 
-3. At the relevant parts of the `vendors/vendors.py` file import the above new module, instantiate an object and drop in an `elif` like so:
+3. At the relevant parts of the `stockspy-server/vendors/vendors.py` file import the above new module, instantiate an object and drop in an `elif` like so:
 
 ```python
 from .scrapers.somevendor import SomeVendor
@@ -67,8 +70,8 @@ elif vendor.hostname == 'www.somevendor.com':
     stock = self.somevendor.get_stock(url)
 ```
 
-4. Build a new Docker Image:
+4. To build and test a new Docker Image use the `factory.sh` script:
 
 ```bash
-./factory --help
+$ ./factory.sh --help
 ```
