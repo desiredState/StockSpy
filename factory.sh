@@ -13,9 +13,9 @@ positional arguments:
     buildtest {args}    both of the above in that order
     push                push the Docker Image
 
-    {client,server}
-      client            operate on the client build
-      server            operate on the server build
+  {client,server}
+    client              operate on the client build
+    server              operate on the server build
 
 optional arguments:
   -h, --help            display this help message
@@ -27,7 +27,7 @@ function check_deps {
 
     for i in "${DEPS[@]}"; do
         if ! hash "${i}" 2>/dev/null; then
-            echo -e "${RED}FACTORY > "${i}" is required to run. Please install it then try again.${NONE}"
+            echo -e "${RED}FACTORY > "${i}" is required. Please install it then try again.${NONE}"
             exit 1
         fi
     done
@@ -58,12 +58,12 @@ GREEN=$(tput setaf 2)
 RED=$(tput setaf 1)
 NONE=$(tput sgr 0)
 
+check_deps
+
 # Environment variable overrides.
 export NAMESPACE=${NAMESPACE:='desiredstate'}
 export TAG=${VERSION:='latest'}
 export UPDATE=${UPDATE:=false}
-
-check_deps
 
 case $2 in
     client)

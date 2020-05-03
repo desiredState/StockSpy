@@ -2,7 +2,7 @@
 
 StockSpy is a modular stock monitoring and alerting platform.
 
-## Installation (Bash environments)
+## Installation
 
 StockSpy is distributed via Docker, so ensure you have that installed before continuing.
 
@@ -11,22 +11,22 @@ $ sudo curl -fsSL https://raw.githubusercontent.com/desiredState/StockSpy/master
 ```
 
 ```bash
-$ stockspy server start
-$ stockspy client start
+$ stockspy start server
+$ stockspy start client
 ```
 
 Once started, StockSpy logs can be observed like so:
 
 ```bash
-$ stockspy server logs
-$ stockspy client logs
+$ stockspy logs server
+$ stockspy logs client
 ```
 
 To stop and remove StockSpy, again, just use Docker commands:
 
 ```bash
-$ stockspy server stop
-$ stockspy client stop
+$ stockspy stop server
+$ stockspy stop client
 ```
 
 ## Adding a new Product/Vendor

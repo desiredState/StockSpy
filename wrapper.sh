@@ -1,9 +1,92 @@
 #!/usr/bin/env bash
 
-if ! hash docker &>/dev/null; then
-    echo 'Docker is required to run StockSpy. Please install it then try again.'
-    exit 1
-fi
+function usage {
+    cat <<EOF
+usage: stockspy [-h] {start,stop,logs} {client,server} ...
+
+positional arguments:
+  {start,stop,logs}
+    start               start the container
+    stop                stop the container
+    logs                tail container logs
+
+  {client,server}
+    client              operate on the client
+    server              operate on the server
+
+optional arguments:
+  -h, --help            display this help message
+EOF
+}
+
+function check_deps {
+    DEPS=( 'docker' )
+
+    for i in "${DEPS[@]}"; do
+        if ! hash "${i}" 2>/dev/null; then
+            echo -e "${RED}StockSpy > "${i}" is required. Please install it then try again.${NONE}"
+            exit 1
+        fi
+    done
+}
+
+function start {
+}
+
+function stop {
+}
+
+function logs {
+}
+
+MAGENTA=$(tput setaf 5)
+GREEN=$(tput setaf 2)
+RED=$(tput setaf 1)
+NONE=$(tput sgr 0)
+
+check_deps
+
+NAMESPACE=${NAMESPACE:='desiredstate'}
+TAG=${VERSION:='latest'}
+UPDATE=${UPDATE:=false}
+
+case $2 in
+    client)
+        IMAGE=${IMAGE:="stockspy-${2}"}
+        ;;
+    server)
+        IMAGE=${IMAGE:="stockspy-${2}"}
+        ;;
+    *)
+        usage
+        exit 1
+esac
+
+case $1 in
+    start)
+        # TODO
+        ;;
+    stop)
+        # TODO
+        ;;
+    logs)
+        # TODO
+        ;;
+    *)
+        usage
+        exit 1
+esac
+
+
+
+
+
+
+
+
+
+
+
 
 case $1 in
     client)
