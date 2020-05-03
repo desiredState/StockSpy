@@ -7,10 +7,10 @@ fi
 
 case $1 in
     client)
-        ARGS='-p 0.0.0.0:80:3000'
+        ARGS=${ARGS:='-p 0.0.0.0:80:3000'}
         ;;
     server)
-        ARGS='-p 0.0.0.0:8080:5000'
+        ARGS=${ARGS:='-p 0.0.0.0:8080:5000'}
         ;;
     *)
         echo 'Usage: stockspy {client,server} [args]'

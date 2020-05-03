@@ -2,6 +2,10 @@ import os
 
 from .common import Vendor
 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
 
 class Tesco(Vendor):
     """
@@ -30,9 +34,14 @@ class Tesco(Vendor):
         self.scraper.find_element_by_xpath(
             '//*[@id="sign-in-form"]/button').click()
 
+        # debug = self.scraper.find_element_by_tag_name('html')
+        # self.logger.debug(debug.text)
+
         # Delivery slots table.
-        element = self.scraper.find_element_by_xpath(
-            '//*[@id="slot-matrix"]'
+        element = WebDriverWait(self.scraper, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, '//*[@id="slot-matrix"]')
+            )
         )
 
         if 'No slots available!' in element.text:

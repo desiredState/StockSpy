@@ -12,6 +12,9 @@ ENV WORKON_HOME /home/stockspy/venv
 
 USER root
 
+# Scraper detection workaround.
+RUN sed -i 's/cdc_/spy_/g' /usr/bin/chromedriver
+
 RUN apt-get update && \
     apt-get -y install $APT_PACKAGES && \
     rm -rf /var/lib/apt/lists/*

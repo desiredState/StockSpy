@@ -87,17 +87,19 @@ class StockSpy():
                         stock = vendors.get_stock(url)
 
                     except ValueError:
-                        log.info(
+                        log.error(
                             f'Unsupported Vendor ({vendor.hostname}) in products.json. Ignoring...')
                         continue
 
-                    except KeyError:
-                        log.info(
-                            f'Couldn\'t find the Vendor\'s scrape element on the webpage ({vendor.hostname}). Ignoring...')
+                    except KeyError as e:
+                        log.error(
+                            f'Couldn\'t find the target element on the Vendor\'s webpage ({vendor.hostname}). Ignoring...'
+                        )
+                        log.debug(e)
                         continue
 
                     except EnvironmentError:
-                        log.info(
+                        log.error(
                             f'Missing ENV variable(s) required by Vendor ({vendor.hostname}). Ignoring...')
                         continue
 
